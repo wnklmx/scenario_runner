@@ -42,7 +42,7 @@ class ScenarioManager(object):
     5. If needed, cleanup with manager.stop_scenario()
     """
 
-    def __init__(self, debug_mode=False, timeout=2.0, scenario=None):
+    def __init__(self, debug_mode=False, timeout=2.0):
         """
         Setups up the parameters, which will be filled at load_scenario()
 
@@ -66,7 +66,6 @@ class ScenarioManager(object):
         self.end_system_time = None
 
         # Socket variables
-        self._scenario_mode = True if scenario is not None else False
         self._socket = None
         self._wait_for_manual = False  # flag that activates when manual_control starts to run
         self._continue = True  # forces SR main loop to wait
@@ -168,8 +167,7 @@ class ScenarioManager(object):
         self._running = True
 
         # Create a socket to listen to the manual_control
-        if self._scenario_mode:
-            _ = threading.Thread(target=self.socket_manager).start()
+        _ = threading.Thread(target=self.socket_manager).start()
 
         while self._running:
             timestamp = None
