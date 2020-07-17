@@ -161,7 +161,7 @@ contains of submodules, which are not listed, the support status applies to all 
 <td><small><code>InfrastructureAction</code><code>TrafficSignalAction</code></small><br><code>TrafficSignalStateAction</code></td>
 <td>&#10060;</td>
 <td>&#9989;</td>
-<td>Setting a traffic light state in CARLA works by providing the position of the relevant traffic light (Example: TrafficSignalStateAction name="pos=x,y" state="green").</td>
+<td>As traffic signals in CARLA towns have no unique ID, they have to be set by providing their position (Example: TrafficSignalStateAction name="pos=x,y" state="green"). The id can also be used for none CARLA town (Example: TrafficSignalStateAction name="id=n" state="green")</td>
 </tbody>
 </table>
 <br>
@@ -289,10 +289,10 @@ The following two tables list the support status for each.
 <tr>
 <td><code>DistanceCondition</code></td>
 <td>&#9989;</td>
-<td></td>
+<td>*freespace* attribute is still not supported</td>
 <tr>
 <td><code>EndOfRoadCondition</code></td>
-<td>&#10060;</td>
+<td>&#9989;</td>
 <td></td>
 <tr>
 <td><code>OffroadCondition</code></td>
@@ -305,7 +305,7 @@ The following two tables list the support status for each.
 <tr>
 <td><code>RelativeDistanceCondition</code></td>
 <td>&#9989;</td>
-<td></td>
+<td>*freespace* attribute is still not supported</td>
 <tr>
 <td><code>RelativeSpeedCondition</code></td>
 <td>&#9989;</td>
@@ -320,12 +320,12 @@ The following two tables list the support status for each.
 <td></td>
 <tr>
 <td><code>TimeHeadwayCondition</code></td>
-<td>&#10060;</td>
-<td></td>
+<td>&#9989;</td>
+<td>*freespace* attribute is still not supported</td>
 <tr>
 <td><code>TimeToCollisionCondition</code></td>
 <td>&#9989;</td>
-<td></td>
+<td>*freespace* attribute is still not supported</td>
 <tr>
 <td><code>TraveledDistanceCondition</code></td>
 <td>&#9989;</td>
@@ -360,8 +360,8 @@ The following two tables list the support status for each.
 <td></td>
 <tr>
 <td><code>TrafficSignalCondition</code></td>
-<td>&#10060;</td>
-<td></td>
+<td>&#9989;</td>
+<td>As traffic signals in CARLA towns have no unique ID, they have to be set by providing their position (Example: TrafficSignalCondition name="pos=x,y" state="green"). The id can also be used for none CARLA town (Example: TrafficSignalCondition name="id=n" state="green")</td>
 <tr>
 <td><code>TrafficSignalControllerCondition</code></td>
 <td>&#10060;</td>
