@@ -91,10 +91,13 @@ class ScenarioManager(object):
 
         CarlaDataProvider.cleanup()
 
-    def load_scenario(self, scenario, agent=None):
+    def load_scenario(self, scenario, agent=None, agent_leaderboard_parsing=False):
         """
         Load a new scenario
         """
+        if agent_leaderboard_parsing:
+            from leaderboard.autoagents.agent_wrapper import AgentWrapper
+        
         self._reset()
         self._agent = AgentWrapper(agent) if agent else None
         if self._agent is not None:
