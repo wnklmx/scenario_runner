@@ -393,22 +393,28 @@ class RouteScenario(BasicScenario):
         """
         Set other_actors to the superset of all scenario actors
         """
+        
+        if config.background_actors_count < 0:
 
-        # Create the background activity of the route
-        town_amount = {
-            'Town01': 120,
-            'Town02': 100,
-            'Town03': 120,
-            'Town04': 200,
-            'Town05': 120,
-            'Town06': 150,
-            'Town07': 110,
-            'Town08': 180,
-            'Town09': 300,
-            'Town10': 120,
-        }
-
-        amount = town_amount[config.town] if config.town in town_amount else 0
+            # Create the background activity of the route
+            town_amount = {
+                'Town01': 120,
+                'Town02': 100,
+                'Town03': 120,
+                'Town04': 200,
+                'Town05': 120,
+                'Town06': 150,
+                'Town07': 110,
+                'Town08': 180,
+                'Town09': 300,
+                'Town10': 120,
+            }
+    
+            amount = town_amount[config.town] if config.town in town_amount else 0
+            
+        else:
+            
+            amount = config.background_actors_count
 
         new_actors = CarlaDataProvider.request_new_batch_actors('vehicle.*',
                                                                 amount,

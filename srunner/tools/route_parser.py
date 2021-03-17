@@ -65,6 +65,7 @@ class RouteParser(object):
             new_config.town = route.attrib['town']
             new_config.name = "RouteScenario_{}".format(route_id)
             new_config.weather = RouteParser.parse_weather(route)
+            new_config.background_actors_count = RouteParser.parse_background_actors_count(route)
             new_config.scenario_file = scenario_file
 
             waypoint_list = []  # the list of waypoints that can be found on this route
@@ -115,6 +116,23 @@ class RouteParser(object):
                     weather.fog_density = float(weather_attrib.attrib['fog_density'])
 
         return weather
+    
+    @staticmethod
+    def parse_background_actors_count(route):
+        """
+        Returns an integer representing the number of background agents.
+        
+        If the attribute is not present or if the value is < 0, the standard values from route_scenario.py are used.
+        """
+
+        route_background_actors = route.find("background_actors")
+        if route_background_actors is None:
+            background_actors_count = -1
+
+        else:
+            background_actors_count = int(route_background_actors.attrib['count'])
+            
+        return background_actors_count
 
     @staticmethod
     def check_trigger_position(new_trigger, existing_triggers):
