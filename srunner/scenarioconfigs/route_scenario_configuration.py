@@ -49,3 +49,4 @@ class RouteScenarioConfiguration(ScenarioConfiguration):
     trajectory = None
     scenario_file = None
     background_actors_count = None
+    only_scenario_class = None

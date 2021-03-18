@@ -284,6 +284,17 @@ class RouteScenario(BasicScenario):
         sampled_scenarios = []
         for trigger in potential_scenarios_definitions.keys():
             possible_scenarios = potential_scenarios_definitions[trigger]
+            
+            if not self.config.only_scenario_class == "":
+                constrained_scenarios = []
+                for possible_scenario in possible_scenarios:
+                    if self.config.only_scenario_class in possible_scenario["name"]:
+                        constrained_scenarios.append(possible_scenario)
+                        
+                if len(constrained_scenarios) > 0:
+                    possible_scenarios = constrained_scenarios
+                else:
+                    continue
 
             scenario_choice = rng.choice(possible_scenarios)
             del possible_scenarios[possible_scenarios.index(scenario_choice)]

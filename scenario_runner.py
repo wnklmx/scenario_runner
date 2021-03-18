@@ -434,7 +434,8 @@ class ScenarioRunner(object):
         # Load the scenario configurations provided in the config file
         scenario_configurations = ScenarioConfigurationParser.parse_scenario_configuration(
             self._args.scenario,
-            self._args.configFile)
+            self._args.configFile,
+            self._args.onlyScenarioClass)
         if not scenario_configurations:
             print("Configuration for scenario {} cannot be found!".format(self._args.scenario))
             return result
@@ -461,7 +462,7 @@ class ScenarioRunner(object):
                 single_route = self._args.route[2]
 
         # retrieve routes
-        route_configurations = RouteParser.parse_routes_file(routes, scenario_file, single_route)
+        route_configurations = RouteParser.parse_routes_file(routes, scenario_file, single_route, self._args.onlyScenarioClass)
 
         for config in route_configurations:
             for _ in range(self._args.repetitions):
@@ -550,7 +551,9 @@ def main():
     parser.add_argument('--junit', action="store_true", help='Write results into a junit file')
     parser.add_argument('--json', action="store_true", help='Write results into a JSON file')
     parser.add_argument('--outputDir', default='', help='Directory for output files (default: this directory)')
-
+    
+    parser.add_argument('--onlyScenarioClass', type=str, default='',
+                        help='Constrain the scenario sampling to a specific class, e.g. Scenario01.')
     parser.add_argument('--configFile', default='', help='Provide an additional scenario configuration file (*.xml)')
     parser.add_argument('--additionalScenario', default='', help='Provide additional scenario implementations (*.py)')
 

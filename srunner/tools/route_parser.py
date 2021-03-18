@@ -45,11 +45,12 @@ class RouteParser(object):
         return final_dict  # the file has a current maps name that is an one element vec
 
     @staticmethod
-    def parse_routes_file(route_filename, scenario_file, single_route=None):
+    def parse_routes_file(route_filename, scenario_file, single_route=None, only_scenario_class=""):
         """
         Returns a list of route elements.
         :param route_filename: the path to a set of routes.
         :param single_route: If set, only this route shall be returned
+        :param only_scenario_class: If set, only scenarios containing the string will be sampled
         :return: List of dicts containing the waypoints, id and town of the routes
         """
 
@@ -67,6 +68,7 @@ class RouteParser(object):
             new_config.weather = RouteParser.parse_weather(route)
             new_config.background_actors_count = RouteParser.parse_background_actors_count(route)
             new_config.scenario_file = scenario_file
+            new_config.only_scenario_class = only_scenario_class
 
             waypoint_list = []  # the list of waypoints that can be found on this route
             for waypoint in route.iter('waypoint'):
