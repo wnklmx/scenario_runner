@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes>
+   <route id="0" town="Town01">
+      <weather 
+         cloudiness="0"
+         precipitation="0"
+         precipitation_deposits="0"
+         wind_intensity="0"
+         sun_azimuth_angle="0"
+         sun_altitude_angle="70"
+         fog_density="0"
+         fog_distance="0"
+         wetness="0"
+      />
+      <background_actors count="0"/>
+      <waypoint pitch="360.0" roll="0.0" x="75.58748626708984" y="326.3004455566406" yaw="180.0352020263672" z="0.0" />
+      <waypoint pitch="360.0" roll="0.0" x="14.334035873413086" y="326.2628173828125" yaw="180.0352020263672" z="0.0" />
+      <waypoint pitch="360.0" roll="0.0" x="1.8717632293701172" y="299.4347229003906" yaw="269.8846435546875" z="0.0" />
+      <waypoint pitch="360.0" roll="0.0" x="1.612621784210205" y="170.71238708496094" yaw="269.8846435546875" z="0.0" />
+   </route>
+</routes>
