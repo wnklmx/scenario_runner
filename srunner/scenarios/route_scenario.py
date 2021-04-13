@@ -214,6 +214,11 @@ class RouteScenario(BasicScenario):
         ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz2017',
                                                           elevate_transform,
                                                           rolename='hero')
+        
+        # change physics
+        physics_control = ego_vehicle.get_physics_control()
+        physics_control.wheels = 4 * [self.config.wheel_physics]
+        ego_vehicle.apply_physics_control(physics_control)
 
         return ego_vehicle
 

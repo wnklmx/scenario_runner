@@ -66,6 +66,7 @@ class RouteParser(object):
             new_config.town = route.attrib['town']
             new_config.name = "RouteScenario_{}".format(route_id)
             new_config.weather = RouteParser.parse_weather(route)
+            new_config.wheel_physics = RouteParser.parse_wheel_physics(route)
             new_config.background_actors_count = RouteParser.parse_background_actors_count(route)
             new_config.scenario_file = scenario_file
             new_config.only_scenario_class = only_scenario_class
@@ -135,6 +136,31 @@ class RouteParser(object):
             background_actors_count = int(route_background_actors.attrib['count'])
             
         return background_actors_count
+    
+    @staticmethod
+    def parse_wheel_physics(route):
+        """
+        Returns a carla.WheelPhysicsControl object.
+        
+        The CARLA documentation does not state any units tire_friction and damping rate.
+        """
+        
+        route_wheel_physics = route.find("wheel_physics")
+        if route_wheel_physics is None:
+            wheel_physics = carla.WheelPhysicsControl()
+
+        else:
+            tire_friction = float(route_wheel_physics.attrib['tire_friction'])
+            damping_rate = float(route_wheel_physics.attrib['damping_rate'])
+            max_brake_torque = float(route_wheel_physics.attrib['max_brake_torque'])
+            max_handbrake_torque = float(route_wheel_physics.attrib['max_handbrake_torque'])
+            wheel_physics = carla.WheelPhysicsControl(tire_friction=tire_friction,
+                                                      damping_rate=damping_rate,
+                                                      max_brake_torque=max_brake_torque,
+                                                      max_handbrake_torque=max_handbrake_torque
+                                                      )
+
+        return wheel_physics
 
     @staticmethod
     def check_trigger_position(new_trigger, existing_triggers):
