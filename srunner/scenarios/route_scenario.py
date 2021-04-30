@@ -184,6 +184,8 @@ class RouteScenario(BasicScenario):
 
         # prepare route's trajectory (interpolate and add the GPS route)
         gps_route, route = interpolate_trajectory(world, config.trajectory)
+        gps_route_without_last_waypoint, route_without_last_waypoint = interpolate_trajectory(world, config.trajectory[0:-1])
+        self.route_without_last_waypoint = route_without_last_waypoint
 
         potential_scenarios_definitions, _ = RouteParser.scan_route_for_scenarios(config.town, route, world_annotations)
 
@@ -217,7 +219,7 @@ class RouteScenario(BasicScenario):
         
         # change physics
         physics_control = ego_vehicle.get_physics_control()
-        physics_control.wheels = 4 * [self.config.wheel_physics]
+        physics_control.wheels = self.config.wheels_physics
         ego_vehicle.apply_physics_control(physics_control)
 
         return ego_vehicle
@@ -353,6 +355,10 @@ class RouteScenario(BasicScenario):
                                                                           'hero')]
             route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
             scenario_configuration.route_var_name = route_var_name
+            
+            scenario_configuration.scenario_config = {}
+            if definition['name'] in self.config.scenario_configs:
+                scenario_configuration.scenario_config = self.config.scenario_configs[definition['name']]
 
             try:
                 scenario_instance = scenario_class(world, [ego_vehicle], scenario_configuration,
@@ -499,7 +505,7 @@ class RouteScenario(BasicScenario):
 
         criteria = []
 
-        route = convert_transform_to_location(self.route)
+        route = convert_transform_to_location(self.route_without_last_waypoint)
 
         collision_criterion = CollisionTest(self.ego_vehicles[0], terminate_on_failure=False)
 

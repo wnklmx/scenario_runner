@@ -66,8 +66,9 @@ class RouteParser(object):
             new_config.town = route.attrib['town']
             new_config.name = "RouteScenario_{}".format(route_id)
             new_config.weather = RouteParser.parse_weather(route)
-            new_config.wheel_physics = RouteParser.parse_wheel_physics(route)
+            new_config.wheels_physics = RouteParser.parse_wheels_physics(route)
             new_config.background_actors_count = RouteParser.parse_background_actors_count(route)
+            new_config.scenario_configs = RouteParser.parse_scenario_configs(route)
             new_config.scenario_file = scenario_file
             new_config.only_scenario_class = only_scenario_class
 
@@ -138,9 +139,9 @@ class RouteParser(object):
         return background_actors_count
     
     @staticmethod
-    def parse_wheel_physics(route):
+    def parse_wheels_physics(route):
         """
-        Returns a carla.WheelPhysicsControl object.
+        Returns a list of carla.WheelPhysicsControl objects.
         
         The CARLA documentation does not state any units tire_friction and damping rate.
         """
@@ -154,13 +155,55 @@ class RouteParser(object):
             damping_rate = float(route_wheel_physics.attrib['damping_rate'])
             max_brake_torque = float(route_wheel_physics.attrib['max_brake_torque'])
             max_handbrake_torque = float(route_wheel_physics.attrib['max_handbrake_torque'])
-            wheel_physics = carla.WheelPhysicsControl(tire_friction=tire_friction,
-                                                      damping_rate=damping_rate,
-                                                      max_brake_torque=max_brake_torque,
-                                                      max_handbrake_torque=max_handbrake_torque
-                                                      )
+            
+            wheels_physics = []
+            
+            for i in range(2):
+            
+                wheel_physics = carla.WheelPhysicsControl(tire_friction=tire_friction,
+                                                          damping_rate=damping_rate,
+                                                          max_steer_angle=70.,
+                                                          radius=35.5,
+                                                          max_brake_torque=max_brake_torque,
+                                                          max_handbrake_torque=0,
+                                                          )
+                wheels_physics.append(wheel_physics)
+                
+            for i in range(2):
+            
+                wheel_physics = carla.WheelPhysicsControl(tire_friction=tire_friction,
+                                                          damping_rate=damping_rate,
+                                                          max_steer_angle=0.,
+                                                          radius=35.5,
+                                                          max_brake_torque=max_brake_torque,
+                                                          max_handbrake_torque=max_handbrake_torque,
+                                                          )
+                wheels_physics.append(wheel_physics)
 
-        return wheel_physics
+        return wheels_physics
+    
+    @staticmethod
+    def parse_scenario_configs(route):
+        """
+        Returns a dict containing parameters for different scenario classes.
+        
+        The values have to be applied within the class of the respective scenario.
+        """
+        
+        route_scenario_configs = route.findall("scenario_config")
+        
+        scenario_configs = {}
+        for route_scenario_config in route_scenario_configs:
+            scenario_class = str(route_scenario_config.attrib['class'])
+            
+            if scenario_class == "Scenario3":
+                scenario_configs["Scenario3"] = {}
+                scenario_configs["Scenario3"]["other_actor_target_velocity"] = float(route_scenario_config.attrib['other_actor_target_velocity'])
+                scenario_configs["Scenario3"]["start_distance"] = float(route_scenario_config.attrib['start_distance'])
+            else:
+                print("ERROR: unknown scenario_config class.")
+
+        return scenario_configs
 
     @staticmethod
     def check_trigger_position(new_trigger, existing_triggers):

@@ -147,12 +147,18 @@ class DynamicObjectCrossing(BasicScenario):
         Setup all relevant parameters and create scenario
         """
         self._wmap = CarlaDataProvider.get_map()
+        
+        self._scenario_configuration = config.scenario_config
 
         self._reference_waypoint = self._wmap.get_waypoint(config.trigger_points[0].location)
         # ego vehicle parameters
         self._ego_vehicle_distance_driven = 40
         # other vehicle parameters
         self._other_actor_target_velocity = 5
+        
+        if "other_actor_target_velocity" in self._scenario_configuration:
+            self._other_actor_target_velocity = self._scenario_configuration["other_actor_target_velocity"]
+        
         self._other_actor_max_brake = 1.0
         self._time_to_reach = 10
         self._adversary_type = adversary_type  # flag to select either pedestrian (False) or cyclist (True)
@@ -204,11 +210,11 @@ class DynamicObjectCrossing(BasicScenario):
 
         if self._adversary_type is False:
             self._walker_yaw = orientation_yaw
-            self._other_actor_target_velocity = 3 + (0.4 * self._num_lane_changes)
+            # self._other_actor_target_velocity = 3 + (0.4 * self._num_lane_changes)
             walker = CarlaDataProvider.request_new_actor('walker.*', transform)
             adversary = walker
         else:
-            self._other_actor_target_velocity = self._other_actor_target_velocity * self._num_lane_changes
+            # self._other_actor_target_velocity = self._other_actor_target_velocity * self._num_lane_changes
             first_vehicle = CarlaDataProvider.request_new_actor('vehicle.diamondback.century', transform)
             first_vehicle.set_simulate_physics(enabled=False)
             adversary = first_vehicle
@@ -246,6 +252,10 @@ class DynamicObjectCrossing(BasicScenario):
         """
         # cyclist transform
         _start_distance = 12
+        if "start_distance" in self._scenario_configuration:
+            _start_distance = self._scenario_configuration["start_distance"]
+        
+        
         # We start by getting and waypoint in the closest sidewalk.
         waypoint = self._reference_waypoint
         while True:
@@ -312,8 +322,12 @@ class DynamicObjectCrossing(BasicScenario):
             policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE, name="OccludedObjectCrossing")
         lane_width = self._reference_waypoint.lane_width
         lane_width = lane_width + (1.25 * lane_width * self._num_lane_changes)
-
-        dist_to_trigger = 12 + self._num_lane_changes
+        
+        _start_distance = 12
+        if "start_distance" in self._scenario_configuration:
+            _start_distance = self._scenario_configuration["start_distance"]
+        
+        dist_to_trigger = _start_distance + self._num_lane_changes
         # leaf nodes
         if self._ego_route is not None:
             start_condition = InTriggerDistanceToLocationAlongRoute(self.ego_vehicles[0],

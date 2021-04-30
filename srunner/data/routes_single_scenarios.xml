@@ -1,12 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <routes>
    <route id="0" town="Town01">
-      <weather cloudiness="90.034910876136427" fog_density="84.19868628468475" fog_distance="15.801313715315246" precipitation="90.034910876136427" precipitation_deposits="90.034910876136427" sun_altitude_angle="30.387201285700193" sun_azimuth_angle="297.52526622148156" wetness="10.034910876136427" wind_intensity="22.833657443530097" />
-      <wheel_physics tire_friction="0.5" damping_rate="0.25" max_brake_torque="1500.0" max_handbrake_torque="3000.0" />
+      <weather cloudiness="0.0" fog_density="0.0" fog_distance="100.0" precipitation="0.0" precipitation_deposits="0.0" sun_altitude_angle="50.0" sun_azimuth_angle="0.0" wetness="0.0" wind_intensity="0.0" />
+      <wheel_physics damping_rate="0.25" max_brake_torque="1500.0" max_handbrake_torque="3000.0" tire_friction="3.5" />
+      <scenario_config class="Scenario3" other_actor_target_velocity="5.29138986763228" start_distance="12.558909386332527" />
       <background_actors count="0" />
       <waypoint pitch="360.0" roll="0.0" x="30.58748626708984" y="326.3004455566406" yaw="180.0352020263672" z="0.0" />
       <waypoint pitch="360.0" roll="0.0" x="14.334035873413086" y="326.2628173828125" yaw="180.0352020263672" z="0.0" />
       <waypoint pitch="360.0" roll="0.0" x="1.8717632293701172" y="299.4347229003906" yaw="269.8846435546875" z="0.0" />
       <waypoint pitch="360.0" roll="0.0" x="1.612621784210205" y="285.71238708496094" yaw="269.8846435546875" z="0.0" />
+      <waypoint pitch="360.0" roll="0.0" x="1.612621784210205" y="170.71238708496094" yaw="269.8846435546875" z="0.0" />
    </route>
 </routes>
