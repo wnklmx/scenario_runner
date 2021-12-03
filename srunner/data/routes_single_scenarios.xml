@@ -1,14 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <routes>
    <route id="0" town="Town01">
-      <weather cloudiness="0.0" fog_density="0.0" fog_distance="100.0" precipitation="0.0" precipitation_deposits="0.0" sun_altitude_angle="50.0" sun_azimuth_angle="0.0" wetness="0.0" wind_intensity="0.0" />
-      <wheel_physics damping_rate="0.25" max_brake_torque="1500.0" max_handbrake_torque="3000.0" tire_friction="3.5" />
-      <scenario_config class="Scenario3" other_actor_target_velocity="5.29138986763228" start_distance="12.558909386332527" />
+      <weather cloudiness="0.8646698255165058" fog_density="0.03862068768406897" fog_distance="99.96137931231593" precipitation="0.8646698255165058" precipitation_deposits="0.8646698255165058" sun_altitude_angle="14.34271875523558" sun_azimuth_angle="78.42412050190937" wetness="0.8646698255165058" wind_intensity="20.112648122400493" />
+      <wheel_physics damping_rate="0.25" max_brake_torque="3000.0" max_handbrake_torque_back="3000.0" max_steer_angle_front="70.0" radius="35.5" tire_friction="1.1664219483253246" />
+      <scenario_config class="Scenario3" other_actor_target_velocity="1.2333081512847124" start_distance="19.470449432270215" />
       <background_actors count="0" />
-      <waypoint pitch="360.0" roll="0.0" x="30.58748626708984" y="326.3004455566406" yaw="180.0352020263672" z="0.0" />
-      <waypoint pitch="360.0" roll="0.0" x="14.334035873413086" y="326.2628173828125" yaw="180.0352020263672" z="0.0" />
-      <waypoint pitch="360.0" roll="0.0" x="1.8717632293701172" y="299.4347229003906" yaw="269.8846435546875" z="0.0" />
-      <waypoint pitch="360.0" roll="0.0" x="1.612621784210205" y="285.71238708496094" yaw="269.8846435546875" z="0.0" />
-      <waypoint pitch="360.0" roll="0.0" x="1.612621784210205" y="170.71238708496094" yaw="269.8846435546875" z="0.0" />
+      <waypoint pitch="360.0" roll="0.0" x="1.61" y="275.0" yaw="270.0" z="0.0" />
+      <waypoint pitch="360.0" roll="0.0" x="1.61" y="200.52955056772979" yaw="270.0" z="0.0" />
+      <waypoint pitch="360.0" roll="0.0" x="1.61" y="150.0" yaw="270.0" z="0.0" />
    </route>
 </routes>

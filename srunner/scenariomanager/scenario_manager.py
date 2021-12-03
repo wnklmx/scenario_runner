@@ -16,11 +16,15 @@ import time
 
 import py_trees
 
+import carla
+
 from srunner.autoagents.agent_wrapper import AgentWrapper
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.result_writer import ResultOutputProvider
 from srunner.scenariomanager.timer import GameTime
 from srunner.scenariomanager.watchdog import Watchdog
+
+import pandas as pd
 
 
 class ScenarioManager(object):
@@ -64,6 +68,9 @@ class ScenarioManager(object):
         self.scenario_duration_game = 0.0
         self.start_system_time = None
         self.end_system_time = None
+        
+        self.ego_history = pd.DataFrame()
+        self.braking_started = False
 
     def _reset(self):
         """
@@ -114,7 +121,7 @@ class ScenarioManager(object):
         if self._agent is not None:
             self._agent.setup_sensors(self.ego_vehicles[0], self._debug_mode)
 
-    def run_scenario(self):
+    def run_scenario(self, record_frames=False):
         """
         Trigger the start of the scenario and wait for it to finish/fail
         """
@@ -124,7 +131,19 @@ class ScenarioManager(object):
 
         self._watchdog.start()
         self._running = True
-
+        
+        # record video
+        if record_frames:
+            world = CarlaDataProvider.get_world()
+            camera_bp = world.get_blueprint_library().find("sensor.camera.rgb")
+            camera_bp.set_attribute("image_size_x", "1920")
+            camera_bp.set_attribute("image_size_y", "1080")
+            camera_bp.set_attribute("fov", "90")
+            ped_y = self.other_actors[0].get_transform().location.y
+            transform = carla.Transform(carla.Location(x=0.0, y=ped_y - 10.0, z=3.0), carla.Rotation(pitch=-10.0, yaw=80.0, roll=0.000000))
+            camera = world.spawn_actor(camera_bp, transform)
+            camera.listen(lambda image: image.save_to_disk("world_frames/frame_{:05d}.jpg".format(image.frame)))
+        
         while self._running:
             timestamp = None
             world = CarlaDataProvider.get_world()
@@ -134,7 +153,10 @@ class ScenarioManager(object):
                     timestamp = snapshot.timestamp
             if timestamp:
                 self._tick_scenario(timestamp)
-
+        
+        if record_frames:
+            camera.destroy()
+                
         self._watchdog.stop()
 
         self.cleanup()
@@ -169,6 +191,31 @@ class ScenarioManager(object):
 
             if self._agent is not None:
                 ego_action = self._agent()
+                
+            # # measuring dynamics
+            # velocity = self.ego_vehicles[0].get_velocity()
+            # acceleration = self.ego_vehicles[0].get_acceleration()
+            
+            # ego_action.throttle = 1.0
+            # ego_action.brake = 0.0
+            # if (velocity.y < -10) or self.braking_started:
+            #     ego_action.throttle = 0.0
+            #     ego_action.brake = 1.0
+            #     self.braking_started = True
+            
+            # self.ego_history = self.ego_history.append({"timestamp": timestamp,
+            #                                             "throttle": ego_action.throttle,
+            #                                             "brake": ego_action.brake,
+            #                                             "vx": velocity.x,
+            #                                             "vy": velocity.y,
+            #                                             "vz": velocity.z,
+            #                                             "ax": acceleration.x,
+            #                                             "ay": acceleration.y,
+            #                                             "az": acceleration.z,
+            #                                             },
+            #                                             ignore_index=True)
+            # self.ego_history.to_csv("test.csv")
+            # # measuring dynamics
 
             if self._agent is not None:
                 self.ego_vehicles[0].apply_control(ego_action)

@@ -154,7 +154,9 @@ class RouteParser(object):
             tire_friction = float(route_wheel_physics.attrib['tire_friction'])
             damping_rate = float(route_wheel_physics.attrib['damping_rate'])
             max_brake_torque = float(route_wheel_physics.attrib['max_brake_torque'])
-            max_handbrake_torque = float(route_wheel_physics.attrib['max_handbrake_torque'])
+            max_handbrake_torque_back = float(route_wheel_physics.attrib['max_handbrake_torque_back'])
+            radius = float(route_wheel_physics.attrib['radius'])
+            max_steer_angle_front = float(route_wheel_physics.attrib['max_steer_angle_front'])
             
             wheels_physics = []
             
@@ -162,8 +164,8 @@ class RouteParser(object):
             
                 wheel_physics = carla.WheelPhysicsControl(tire_friction=tire_friction,
                                                           damping_rate=damping_rate,
-                                                          max_steer_angle=70.,
-                                                          radius=35.5,
+                                                          max_steer_angle=max_steer_angle_front,
+                                                          radius=radius,
                                                           max_brake_torque=max_brake_torque,
                                                           max_handbrake_torque=0,
                                                           )
@@ -174,9 +176,9 @@ class RouteParser(object):
                 wheel_physics = carla.WheelPhysicsControl(tire_friction=tire_friction,
                                                           damping_rate=damping_rate,
                                                           max_steer_angle=0.,
-                                                          radius=35.5,
+                                                          radius=radius,
                                                           max_brake_torque=max_brake_torque,
-                                                          max_handbrake_torque=max_handbrake_torque,
+                                                          max_handbrake_torque=max_handbrake_torque_back,
                                                           )
                 wheels_physics.append(wheel_physics)
 

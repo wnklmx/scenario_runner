@@ -221,6 +221,9 @@ class RouteScenario(BasicScenario):
         physics_control = ego_vehicle.get_physics_control()
         physics_control.wheels = self.config.wheels_physics
         ego_vehicle.apply_physics_control(physics_control)
+        
+        # change light
+        ego_vehicle.set_light_state(carla.VehicleLightState.LowBeam)
 
         return ego_vehicle
 

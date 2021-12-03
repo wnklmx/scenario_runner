@@ -20,7 +20,8 @@ from srunner.scenariomanager.scenarioatomics.atomic_behaviors import (ActorTrans
                                                                       AccelerateToVelocity,
                                                                       HandBrakeVehicle,
                                                                       KeepVelocity,
-                                                                      StopVehicle)
+                                                                      StopVehicle,
+                                                                      SetInitSpeed)
 from srunner.scenariomanager.scenarioatomics.atomic_criteria import CollisionTest
 from srunner.scenariomanager.scenarioatomics.atomic_trigger_conditions import (InTriggerDistanceToLocationAlongRoute,
                                                                                InTimeToArrivalToVehicle,
@@ -49,7 +50,7 @@ class StationaryObjectCrossing(BasicScenario):
         self._wmap = CarlaDataProvider.get_map()
         self._reference_waypoint = self._wmap.get_waypoint(config.trigger_points[0].location)
         # ego vehicle parameters
-        self._ego_vehicle_distance_driven = 40
+        self._ego_vehicle_distance_driven = 50
 
         # other vehicle parameters
         self._other_actor_target_velocity = 10
@@ -152,7 +153,7 @@ class DynamicObjectCrossing(BasicScenario):
 
         self._reference_waypoint = self._wmap.get_waypoint(config.trigger_points[0].location)
         # ego vehicle parameters
-        self._ego_vehicle_distance_driven = 40
+        self._ego_vehicle_distance_driven = 50
         # other vehicle parameters
         self._other_actor_target_velocity = 5
         
@@ -232,13 +233,16 @@ class DynamicObjectCrossing(BasicScenario):
         y_ego = self._reference_waypoint.transform.location.y
         x_cycle = transform.location.x
         y_cycle = transform.location.y
-        x_static = x_ego + shift * (x_cycle - x_ego)
-        y_static = y_ego + shift * (y_cycle - y_ego)
+        # edited to avoid spawning ped in/behind vending machine
+        # x_static = x_ego + shift * (x_cycle - x_ego)
+        # y_static = y_ego + shift * (y_cycle - y_ego)
+        x_static = x_cycle
+        y_static = y_cycle + 0.9
 
         spawn_point_wp = self.ego_vehicles[0].get_world().get_map().get_waypoint(transform.location)
 
         self.transform2 = carla.Transform(carla.Location(x_static, y_static,
-                                                         spawn_point_wp.transform.location.z + 0.3),
+                                                         spawn_point_wp.transform.location.z + 0.3), # +0.3 REVERSE TODO
                                           carla.Rotation(yaw=orientation_yaw + 180))
 
         static = CarlaDataProvider.request_new_actor('static.prop.vendingmachine', self.transform2)
@@ -339,63 +343,72 @@ class DynamicObjectCrossing(BasicScenario):
                                                        self.other_actors[0],
                                                        self._time_to_reach)
 
-        actor_velocity = KeepVelocity(self.other_actors[0],
-                                      self._other_actor_target_velocity,
-                                      name="walker velocity")
-        actor_drive = DriveDistance(self.other_actors[0],
-                                    0.5 * lane_width,
-                                    name="walker drive distance")
-        actor_start_cross_lane = AccelerateToVelocity(self.other_actors[0],
+        actor_velocity = AccelerateToVelocity(self.other_actors[0],
                                                       1.0,
                                                       self._other_actor_target_velocity,
                                                       name="walker crossing lane accelerate velocity")
+        
+        actor_drive = DriveDistance(self.other_actors[0],
+                                    0.5 * lane_width,
+                                    name="walker drive distance")
+        
         actor_cross_lane = DriveDistance(self.other_actors[0],
                                          lane_width,
                                          name="walker drive distance for lane crossing ")
-        actor_stop_crossed_lane = StopVehicle(self.other_actors[0],
-                                              self._other_actor_max_brake,
-                                              name="walker stop")
         ego_pass_machine = DriveDistance(self.ego_vehicles[0],
                                          5,
                                          name="ego vehicle passed prop")
+        
+        # the pedestrian stops its movement
+        actor_stop_crossed_lane = StopVehicle(self.other_actors[0],
+                                              self._other_actor_max_brake,
+                                              name="walker stop")
         actor_remove = ActorDestroy(self.other_actors[0],
                                     name="Destroying walker")
         static_remove = ActorDestroy(self.other_actors[1],
                                      name="Destroying Prop")
-        end_condition = DriveDistance(self.ego_vehicles[0],
-                                      self._ego_vehicle_distance_driven,
-                                      name="End condition ego drive distance")
+        # end_condition = DriveDistance(self.ego_vehicles[0],
+        #                               self._ego_vehicle_distance_driven,
+        #                               name="End condition ego drive distance")
 
         # non leaf nodes
-
         scenario_sequence = py_trees.composites.Sequence()
-        keep_velocity_other = py_trees.composites.Parallel(
-            policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE, name="keep velocity other")
-        keep_velocity = py_trees.composites.Parallel(
-            policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE, name="keep velocity")
+        # keep_velocity_other = py_trees.composites.Parallel(
+        #     policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE, name="keep velocity other")
+        # keep_velocity = py_trees.composites.Parallel(
+        #     policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE, name="keep velocity")
 
         # building tree
+        self.transform.location.z -= 0.924135
 
         root.add_child(scenario_sequence)
         scenario_sequence.add_child(ActorTransformSetter(self.other_actors[0], self.transform,
                                                          name='TransformSetterTS3walker'))
         scenario_sequence.add_child(ActorTransformSetter(self.other_actors[1], self.transform2,
                                                          name='TransformSetterTS3coca', physics=False))
-        scenario_sequence.add_child(HandBrakeVehicle(self.other_actors[0], True))
-        scenario_sequence.add_child(start_condition)
-        scenario_sequence.add_child(HandBrakeVehicle(self.other_actors[0], False))
-        scenario_sequence.add_child(keep_velocity)
-        scenario_sequence.add_child(keep_velocity_other)
+        
+        scenario_sequence.add_child(actor_velocity)
+        scenario_sequence.add_child(actor_drive)
+        
+        # scenario_sequence.add_child(HandBrakeVehicle(self.other_actors[0], True))
+        # scenario_sequence.add_child(start_condition)
+        # scenario_sequence.add_child(HandBrakeVehicle(self.other_actors[0], False))
+        
+        # success in one of the two brings us further
+        # keep_velocity.add_child(actor_velocity)
+        # keep_velocity.add_child(actor_drive)
+        # scenario_sequence.add_child(keep_velocity)
+        
+        # success in one of the three brings us further
+        # keep_velocity_other.add_child(actor_start_cross_lane)
+        # keep_velocity_other.add_child(actor_cross_lane)
+        # keep_velocity_other.add_child(ego_pass_machine)
+        scenario_sequence.add_child(ego_pass_machine)
+        
         scenario_sequence.add_child(actor_stop_crossed_lane)
         scenario_sequence.add_child(actor_remove)
         scenario_sequence.add_child(static_remove)
-        scenario_sequence.add_child(end_condition)
-
-        keep_velocity.add_child(actor_velocity)
-        keep_velocity.add_child(actor_drive)
-        keep_velocity_other.add_child(actor_start_cross_lane)
-        keep_velocity_other.add_child(actor_cross_lane)
-        keep_velocity_other.add_child(ego_pass_machine)
+        # scenario_sequence.add_child(end_condition)
 
         return root
 

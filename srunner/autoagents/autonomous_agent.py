@@ -9,12 +9,21 @@ This module provides the base class for all autonomous agents
 
 from __future__ import print_function
 
+from enum import Enum
+
 import carla
 
 from srunner.autoagents.sensor_interface import SensorInterface
 from srunner.scenariomanager.timer import GameTime
 from srunner.tools.route_manipulation import downsample_route
 
+class Track(Enum):
+
+    """
+    This enum represents the different tracks of the CARLA AD leaderboard.
+    """
+    SENSORS = 'SENSORS'
+    MAP = 'MAP'
 
 class AutonomousAgent(object):
 

@@ -404,6 +404,12 @@ class ScenarioRunner(object):
 
             # Load scenario and run it
             self.manager.load_scenario(scenario, self.agent_instance, self._args.agentLeaderboardParsing)
+            
+            # change viewpoint
+            ped_y = self.manager.other_actors[0].get_transform().location.y
+            transform = carla.Transform(carla.Location(x=0.0, y=ped_y -  10.0, z=3.0), carla.Rotation(pitch=-10.0, yaw=80.0, roll=0.000000))
+            self.world.get_spectator().set_transform(transform)
+            
             self.manager.run_scenario()
 
             # Provide outputs if required
